@@ -21,7 +21,7 @@ Stars are from GitHub as of 2026-01-14.
 | --- | --- | --- |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | [gemini-cli-architecture.md](gemini-cli-architecture.md) | 90.9k |
 | [Eigent](https://github.com/eigent-ai/eigent) | [eigent-architecture.md](eigent-architecture.md) | 4.4k |
-| [OpenCode](https://github.com/anomalyco/opencode) | [opencode-architecture.md](opencode-architecture.md) | 68.6k |
+| [OpenCode](https://github.com/anomalyco/opencode) | [opencode-architecture.md](opencode-architecture.md)<br>[projects/opencode/README.md](projects/opencode/README.md) | 68.6k |
 | [Codex](https://github.com/openai/codex) | [codex-dotfile-setup.md](codex-dotfile-setup.md)<br>[codex-architecture-breakdown.md](codex-architecture-breakdown.md)<br>[projects/codex/README.md](projects/codex/README.md) | 56.1k |
 | [Cline](https://github.com/cline/cline) | [cline-architecture.md](cline-architecture.md) | 56.9k |
 | [OpenHands](https://github.com/OpenHands/OpenHands) | [openhands-architecture.md](openhands-architecture.md) | 66.6k |
@@ -39,3 +39,4 @@ Stars are from GitHub as of 2026-01-14.
 - `openhands-architecture.md`
 - `opencode-architecture.md`
 - `projects/codex/README.md`
+- `projects/opencode/README.md`
