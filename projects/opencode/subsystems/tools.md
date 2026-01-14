@@ -17,15 +17,7 @@ Key files:
 
 ## Tool state chart
 
-```mermaid
-stateDiagram-v2
-  [*] --> pending: tool-input-start
-  pending --> running: tool-call
-  running --> completed: tool-result
-  running --> error: tool-error
-  completed --> [*]
-  error --> [*]
-```
+Diagram: `../diagrams/tool-state-chart.mmd`.
 
 ## Tool registry and built-ins
 

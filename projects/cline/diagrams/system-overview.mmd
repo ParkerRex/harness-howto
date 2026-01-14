@@ -1,0 +1,42 @@
+flowchart LR
+  U[User] -->|chat input| WV[Webview UI]
+
+  subgraph VSCode[VS Code Extension Host]
+    EXT[extension.ts]
+    WVP[WebviewProvider]
+    CTRL[Controller]
+    TASK[Task]
+    PROMPTS[System Prompt Registry]
+    TOOLS[ToolExecutor + Handlers]
+    CTX[ContextManager]
+    STATE[StateManager]
+  end
+
+  subgraph Host[Host Integrations]
+    TERM[Terminal Manager]
+    FS[File System + Diff View]
+    BROWSER[BrowserSession]
+    MCP[MCP Hub]
+  end
+
+  subgraph Storage[Local Storage]
+    TASKDIR[~/.cline/data/tasks/<taskId>]
+    SETTINGS[Global/Workspace State + Secrets]
+  end
+
+  subgraph Providers[Model Providers]
+    LLM[Anthropic/OpenAI/OpenRouter/etc]
+  end
+
+  U --> WV --> WVP --> CTRL --> TASK
+  TASK --> PROMPTS
+  TASK --> CTX
+  TASK --> TOOLS
+  TASK --> STATE
+  TOOLS --> TERM
+  TOOLS --> FS
+  TOOLS --> BROWSER
+  TOOLS --> MCP
+  TASK --> LLM
+  STATE --> SETTINGS
+  TASK --> TASKDIR

@@ -1,0 +1,36 @@
+flowchart LR
+  subgraph UI[Frontends]
+    TUI[TUI / TUI2]
+    EXEC[exec CLI]
+    SDK[TypeScript SDK]
+  end
+
+  subgraph CORE[codex-core]
+    TM[ThreadManager]
+    S[Session]
+    TC[TurnContext]
+    CM[ContextManager]
+    TR[ToolRouter + Registry]
+    MCP[MCP Connection Manager]
+  end
+
+  subgraph MODEL[Model Provider]
+    RESP[Responses API / ModelClient]
+  end
+
+  subgraph STORE[Persistence + OS]
+    ROLL[~/.codex/sessions/*.jsonl]
+    RULES[execpolicy rules]
+    FS[filesystem / shell]
+  end
+
+  UI --> TM
+  TM --> S
+  S --> TC
+  S --> CM
+  S --> TR
+  TR --> FS
+  S --> RESP
+  MCP --> TR
+  S --> ROLL
+  S --> RULES

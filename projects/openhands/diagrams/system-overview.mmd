@@ -1,0 +1,58 @@
+flowchart LR
+  subgraph Clients
+    CLI[CLI]
+    WebUI[Local Web UI]
+    IDE[IDE/VSCode]
+  end
+
+  subgraph AppServerV1[App Server V1 (FastAPI)]
+    V1Router[v1_router]
+    AppConv[app_conversation]
+    EventSvc[event service]
+    SandboxSvc[sandbox service]
+    UserSvc[user + jwt]
+  end
+
+  subgraph AgentCoreV1[Agent SDK / Tools (external)]
+    SDK[openhands-sdk]
+    Tools[openhands-tools]
+    AgentServer[openhands-agent-server]
+  end
+
+  subgraph LegacyV0[Legacy V0 Core]
+    ServerWS[server (websocket)]
+    AgentCtl[controller + agenthub]
+    Memory[memory + condenser]
+    Events[event stream/store]
+  end
+
+  subgraph Runtime
+    RuntimeClient[Runtime client]
+    ActionExec[action_execution_server]
+    Sandbox[Docker/Local/Remote]
+  end
+
+  LLM[LLM Providers]
+  Store[FileStore / EventStore]
+
+  Clients --> AppServerV1
+  Clients --> ServerWS
+
+  AppServerV1 --> SDK
+  SDK --> AgentServer
+  SDK --> Tools
+
+  ServerWS --> AgentCtl
+  AgentCtl --> Memory
+  AgentCtl --> Events
+  Memory --> Events
+
+  AgentCtl --> LLM
+  SDK --> LLM
+
+  AgentCtl --> RuntimeClient
+  RuntimeClient --> ActionExec
+  ActionExec --> Sandbox
+
+  Events --> Store
+  AppServerV1 --> Store

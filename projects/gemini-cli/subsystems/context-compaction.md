@@ -32,14 +32,4 @@ Files:
 
 ## Compaction flow
 
-```mermaid
-flowchart LR
-  H[Curated history] --> Check{Token count >= threshold?}
-  Check -->|No| Skip[No compression]
-  Check -->|Yes| Split[Find split point]
-  Split --> Summarize[Summarize old history]
-  Summarize --> NewHist[Build new history]
-  NewHist --> Count[Recount tokens]
-  Count -->|Inflated| Fail[Compression failed]
-  Count -->|Reduced| Apply[Replace history]
-```
+Diagram: `../diagrams/compaction-flow.mmd`.

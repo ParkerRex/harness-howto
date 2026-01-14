@@ -8,21 +8,7 @@ policy engine + confirmation bus.
 Tool call lifecycle is modeled in `gemini-cli/packages/core/src/scheduler/types.ts`
 and driven by `CoreToolScheduler`.
 
-```mermaid
-stateDiagram-v2
-  [*] --> validating
-  validating --> scheduled
-  scheduled --> awaiting_approval
-  awaiting_approval --> executing: confirm
-  awaiting_approval --> cancelled: deny
-  executing --> success
-  executing --> error
-  executing --> cancelled
-
-  success --> [*]
-  error --> [*]
-  cancelled --> [*]
-```
+Diagram: `../diagrams/tools-state-machine.mmd`.
 
 Key components:
 

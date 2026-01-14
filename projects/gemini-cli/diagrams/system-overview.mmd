@@ -1,0 +1,54 @@
+flowchart LR
+  U[User] --> CLI
+
+  subgraph CLI[CLI package (Ink UI + non-interactive)]
+    CLIInput[Input + commands]
+    CLIStream[Stream renderer]
+    CLITools[Tool confirmations + output]
+  end
+
+  subgraph Core[@google/gemini-cli-core]
+    Client[GeminiClient]
+    Chat[GeminiChat]
+    Turn[Turn event loop]
+    Tools[CoreToolScheduler + ToolExecutor]
+    Policy[PolicyEngine + MessageBus]
+    Context[ContextManager]
+    Registry[ToolRegistry + PromptRegistry]
+    Hooks[HookSystem]
+  end
+
+  subgraph Ext[Extensions + MCP]
+    MCP[MCP servers]
+    ExtTools[Discovered tools/prompts/resources]
+  end
+
+  subgraph Storage[Local storage (~/.gemini + project temp)]
+    Sessions[Session JSON + summaries]
+    Settings[settings.json + policies]
+    Memory[GEMINI.md + memory]
+    Checkpoints[Tool checkpoints + git snapshots]
+  end
+
+  subgraph External[External services]
+    GeminiAPI[Gemini API / Code Assist]
+    Telemetry[Telemetry targets]
+  end
+
+  CLI --> Client
+  Client --> Chat
+  Chat --> GeminiAPI
+  Turn --> Tools
+  Tools --> Policy
+  Context --> Client
+  Registry --> Chat
+  Hooks --> Chat
+
+  MCP --> ExtTools
+  ExtTools --> Registry
+
+  Client --> Sessions
+  Context --> Memory
+  CLI --> Settings
+  Tools --> Checkpoints
+  Client --> Telemetry

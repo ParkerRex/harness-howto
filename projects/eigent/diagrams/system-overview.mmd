@@ -1,0 +1,13 @@
+flowchart LR
+  subgraph Desktop
+    UI[Renderer (React/Zustand) src/]
+    EM[Electron main electron/main]
+  end
+  EM -->|spawn uvicorn| BE[AI Backend (FastAPI+CAMEL) backend/]
+  UI -->|POST /chat SSE| BE
+  BE -->|SSE steps| UI
+  BE -->|sync_step POST /chat/steps| SV[Server (FastAPI+DB) server/]
+  SV --> DB[(SQL Database)]
+  EM -->|read/write| MCP[~/.eigent/mcp.json]
+  BE --> TK[Toolkits backend/app/utils/toolkit/*]
+  TK --> WB[Browser WS server HybridBrowserToolkit]

@@ -20,14 +20,4 @@ pipeline when needed.
 
 All stages are driven from `src/core/loop.ts`.
 
-```mermaid
-flowchart LR
-  A[Messages] --> B{Above Threshold?}
-  B -- No --> A
-  B -- Yes --> C[Microcompact]
-  C --> D{Session Memory Enabled?}
-  D -- Yes --> E[Session Memory Summary]
-  D -- No --> F[Conversation Summary]
-  E --> G[Replace Message History]
-  F --> G
-```
+Diagram: `../diagrams/context-compaction-flow.mmd`.

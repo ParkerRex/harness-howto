@@ -35,16 +35,7 @@ Important files:
 
 ## Prompt assembly diagram
 
-```mermaid
-flowchart TB
-  A[ModelInfo: base_instructions] --> P[Prompt]
-  B[Developer instructions (config)] --> P
-  C[User instructions: AGENTS.md + config] --> P
-  D[Skills injections] --> P
-  E[ContextManager history] --> P
-  F[Tool specs for this turn] --> P
-  P --> M[Model request]
-```
+Diagram: `../diagrams/prompt-assembly.mmd`.
 
 Key idea: base + developer + user + skills are additive; history is normalized
 and truncated as needed before being sent.

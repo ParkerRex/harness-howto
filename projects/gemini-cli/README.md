@@ -8,7 +8,8 @@ compression, and session persistence. Paths below are relative to the
 
 ## Start here
 
-- Repo map: `repo-map.md`
+- Architecture overview: `architecture-overview.md`
+- Key patterns: `key-patterns.md`
 - Core runtime (CLI/Core, turn loop, message model): `subsystems/core-runtime.md`
 - Tools + policy + confirmations: `subsystems/tools.md`
 - Model selection + prompting: `subsystems/models-prompting.md`
@@ -16,63 +17,8 @@ compression, and session persistence. Paths below are relative to the
 - Sessions + persistence: `subsystems/persistence-sessions.md`
 - Failure modes + safety: `subsystems/safety-failure-modes.md`
 - Observability: `subsystems/observability.md`
-- Onboarding checklist + mental model: `onboarding.md`
-
-## System overview
-
-```mermaid
-flowchart LR
-  U[User] --> CLI
-
-  subgraph CLI[CLI package (Ink UI + non-interactive)]
-    CLIInput[Input + commands]
-    CLIStream[Stream renderer]
-    CLITools[Tool confirmations + output]
-  end
-
-  subgraph Core[@google/gemini-cli-core]
-    Client[GeminiClient]
-    Chat[GeminiChat]
-    Turn[Turn event loop]
-    Tools[CoreToolScheduler + ToolExecutor]
-    Policy[PolicyEngine + MessageBus]
-    Context[ContextManager]
-    Registry[ToolRegistry + PromptRegistry]
-    Hooks[HookSystem]
-  end
-
-  subgraph Ext[Extensions + MCP]
-    MCP[MCP servers]
-    ExtTools[Discovered tools/prompts/resources]
-  end
-
-  subgraph Storage[Local storage (~/.gemini + project temp)]
-    Sessions[Session JSON + summaries]
-    Settings[settings.json + policies]
-    Memory[GEMINI.md + memory]
-    Checkpoints[Tool checkpoints + git snapshots]
-  end
-
-  subgraph External[External services]
-    GeminiAPI[Gemini API / Code Assist]
-    Telemetry[Telemetry targets]
-  end
-
-  CLI --> Client
-  Client --> Chat
-  Chat --> GeminiAPI
-  Turn --> Tools
-  Tools --> Policy
-  Context --> Client
-  Registry --> Chat
-  Hooks --> Chat
-
-  MCP --> ExtTools
-  ExtTools --> Registry
-
-  Client --> Sessions
-  Context --> Memory
-  CLI --> Settings
-  Tools --> Checkpoints
-  Client --> Telemetry
-```
+- Reference map: `reference/directory-map.md`
+- Key files: `reference/key-files.md`
+- Mental model: `reference/mental-model.md`
+- Comparison notes: `comparison.md`
+- Changelogs: `CHANGELOG-upstream.md`, `CHANGELOG-docs.md`

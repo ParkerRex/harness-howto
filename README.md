@@ -31,13 +31,15 @@ Stars are from GitHub as of 2026-01-14.
 
 ## Docs in this repo
 
-- `claude-dotfile-setup.md`
-- `codex-dotfile-setup.md`
-- `inspect-background-agent-architecture.md`
-- `projects/codex/README.md`
-- `projects/opencode/README.md`
-- `projects/gemini-cli/README.md`
-- `projects/cline/README.md`
-- `projects/openhands/README.md`
-- `projects/eigent/README.md`
-- `projects/claude-code-open/README.md`
+- `comparison/summary.md` for a cross-project snapshot.
+- Each project under `projects/<name>/` now includes:
+  - `README.md` (TL;DR + entry points)
+  - `architecture-overview.md`
+  - `key-patterns.md` + `comparison.md`
+  - `subsystems/` and `reference/`
+  - `CHANGELOG-upstream.md` + `CHANGELOG-docs.md`
+  - `diagrams/*.mmd`
+- Additional docs:
+  - `claude-dotfile-setup.md`
+  - `codex-dotfile-setup.md`
+  - `inspect-background-agent-architecture.md`

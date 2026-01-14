@@ -50,14 +50,7 @@ Core control flow:
 
 ### Compaction flowchart
 
-```mermaid
-flowchart TD
-  A[Token usage >= auto_compact_token_limit] --> B{Remote compaction enabled?}
-  B -- yes --> C[compact_remote.rs: compact_conversation_history]
-  B -- no --> D[compact.rs: summarize + rebuild history]
-  C --> E[Replace history + emit ContextCompactedEvent]
-  D --> E
-```
+Diagram: `../diagrams/compaction-flow.mmd`.
 
 ### What gets preserved
 

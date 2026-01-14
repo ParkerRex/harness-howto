@@ -34,34 +34,7 @@ messages are normalized into a single timeline.
 
 ## Session lifecycle and event flow (swimlane)
 
-```mermaid
-flowchart LR
-  subgraph User
-    U1[User input]
-  end
-  subgraph UI
-    UI1[CLI/TUI receives input]
-    UI2[Submits Op::SubmitInput]
-    UI3[Renders Event stream]
-  end
-  subgraph Core
-    C1[ThreadManager -> Session]
-    C2[run_turn builds prompt]
-    C3[run_model_turn]
-    C4[ToolRouter dispatch]
-    C5[Record outputs in history]
-  end
-  subgraph Model
-    M1[Model returns ResponseItem(s)]
-  end
-  subgraph Tools
-    T1[Shell / MCP / ApplyPatch]
-  end
-
-  U1 --> UI1 --> UI2 --> C1 --> C2 --> C3 --> M1
-  M1 --> C4 --> T1 --> C5 --> C3
-  C3 --> UI3
-```
+Diagram: `../diagrams/session-event-flow.mmd`.
 
 Where to look:
 - Turn loop: `codex-rs/core/src/codex.rs` (`run_turn`, `run_model_turn`)

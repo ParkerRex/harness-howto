@@ -27,12 +27,4 @@ Files:
 
 ## Compaction flow diagram
 
-```mermaid
-flowchart TD
-  A[Finish step -> usage tokens] --> B{Overflow?}
-  B -- no --> C[Continue session]
-  B -- yes --> D[Create compaction user message]
-  D --> E[Compaction agent summarizes]
-  E --> F[Store summary + mark compaction]
-  F --> C
-```
+Diagram: `../diagrams/compaction-flow.mmd`.

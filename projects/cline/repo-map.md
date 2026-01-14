@@ -1,9 +1,3 @@
 # Cline Repo Map (Top-Level)
 
-At the top level of the `cline` submodule:
-
-- `src/` - extension host code (controller, task loop, tools, prompts, storage).
-- `webview-ui/` - React webview UI bundled into the extension.
-- `scripts/` - build and helper scripts.
-- `docs/` - additional docs and walkthroughs.
-- `resources/` - static assets and templates.
+This content moved to `reference/directory-map.md`.

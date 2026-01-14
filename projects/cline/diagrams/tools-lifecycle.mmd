@@ -1,0 +1,10 @@
+stateDiagram-v2
+  [*] --> ToolDetected
+  ToolDetected --> PendingApproval
+  PendingApproval --> Approved
+  PendingApproval --> Rejected
+  Approved --> Executing
+  Executing --> ToolResult
+  ToolResult --> Persisted
+  Rejected --> Persisted
+  Persisted --> [*]

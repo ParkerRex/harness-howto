@@ -1,0 +1,7 @@
+stateDiagram-v2
+  [*] --> pending: tool-input-start
+  pending --> running: tool-call
+  running --> completed: tool-result
+  running --> error: tool-error
+  completed --> [*]
+  error --> [*]

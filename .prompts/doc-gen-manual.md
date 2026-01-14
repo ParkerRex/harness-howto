@@ -9,11 +9,19 @@ changes, and preserve wording where still accurate.
 ## Target Output
 Update the existing files under `projects/<submodule>/`:
 
-- `README.md` (overview + system map)
-- `repo-map.md`
-- `onboarding.md`
+- `README.md` (TL;DR + entry points)
+- `architecture-overview.md`
+- `key-patterns.md`
+- `comparison.md`
+- `CHANGELOG-upstream.md`
+- `CHANGELOG-docs.md`
+- `reference/*.md` (key-files, directory-map, mental-model)
+- `diagrams/*.mmd` (Mermaid diagrams, linked from docs)
 - `subsystems/*.md` (core runtime, tools, models/prompting, context/compaction,
   persistence, safety, observability, etc.)
+
+`repo-map.md` and `onboarding.md` are legacy stubs that should link to the
+reference docs.
 
 Do NOT create a new top-level `{submodule}-architecture.md` file when a manual
 structure exists.
@@ -28,8 +36,9 @@ For each submodule listed:
 2. Use `git log` and `git diff` scoped to the submodule to identify changes since
    the last doc update.
 3. Patch only the relevant sections/files. Do not rewrite the full docs.
-4. Keep diagrams and file paths accurate. Only update diagrams if underlying
-   flows changed.
+4. Keep diagrams and file paths accurate. Mermaid diagrams live in
+   `diagrams/*.mmd` and should be linked from docs instead of inlined.
+   Only update diagrams if underlying flows changed.
 5. Preserve tone and file organization; add new subsystem files only if the
    current structure is missing a required area.
 

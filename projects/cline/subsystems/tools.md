@@ -24,18 +24,7 @@ Tool results are normalized and appended to message history via
 
 ## Tool lifecycle (state diagram)
 
-```mermaid
-stateDiagram-v2
-  [*] --> ToolDetected
-  ToolDetected --> PendingApproval
-  PendingApproval --> Approved
-  PendingApproval --> Rejected
-  Approved --> Executing
-  Executing --> ToolResult
-  ToolResult --> Persisted
-  Rejected --> Persisted
-  Persisted --> [*]
-```
+Diagram: `../diagrams/tools-lifecycle.mmd`.
 
 ## Adding a new tool (summary)
 

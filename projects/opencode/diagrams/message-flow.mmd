@@ -1,0 +1,16 @@
+sequenceDiagram
+  participant U as User
+  participant C as Client (TUI/SDK/Desktop/Web)
+  participant S as Server (opencode)
+  participant L as LLM Stream
+  participant T as Tool
+
+  U->>C: Prompt
+  C->>S: POST /session/:id/message
+  S->>S: SessionPrompt.createUserMessage()
+  S->>L: LLM.stream(system + messages + tools)
+  L-->>S: tool-call
+  S->>T: execute tool
+  T-->>S: output + attachments
+  L-->>S: text/finish
+  S-->>C: streamed updates + final message

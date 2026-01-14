@@ -28,21 +28,7 @@ or `ResponseItem::LocalShellCall`. These are converted into a normalized
 
 ## Tool call sequence diagram
 
-```mermaid
-sequenceDiagram
-  participant Model
-  participant Router
-  participant Registry
-  participant Handler
-  participant Session
-
-  Model->>Router: ResponseItem::FunctionCall
-  Router->>Registry: dispatch(tool_name, payload)
-  Registry->>Handler: handle(invocation)
-  Handler-->>Registry: ToolOutput
-  Registry-->>Session: ResponseInputItem::FunctionCallOutput
-  Session-->>Model: next turn includes tool output
-```
+Diagram: `../diagrams/tools-call-sequence.mmd`.
 
 ## Adding a new built-in tool (recipe)
 

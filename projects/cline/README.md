@@ -7,7 +7,8 @@ relative to the `cline/` submodule.
 
 ## Start here
 
-- Repo map: `repo-map.md`
+- Architecture overview: `architecture-overview.md`
+- Key patterns: `key-patterns.md`
 - Core runtime (controller, task, messages): `subsystems/core-runtime.md`
 - Tools + approvals: `subsystems/tools.md`
 - Model selection + prompting: `subsystems/models-prompting.md`
@@ -15,51 +16,8 @@ relative to the `cline/` submodule.
 - Persistence + history: `subsystems/persistence.md`
 - Safety + failure modes: `subsystems/safety-failure-modes.md`
 - Observability: `subsystems/observability.md`
-- Onboarding checklist: `onboarding.md`
-
-## System overview
-
-```mermaid
-flowchart LR
-  U[User] -->|chat input| WV[Webview UI]
-
-  subgraph VSCode[VS Code Extension Host]
-    EXT[extension.ts]
-    WVP[WebviewProvider]
-    CTRL[Controller]
-    TASK[Task]
-    PROMPTS[System Prompt Registry]
-    TOOLS[ToolExecutor + Handlers]
-    CTX[ContextManager]
-    STATE[StateManager]
-  end
-
-  subgraph Host[Host Integrations]
-    TERM[Terminal Manager]
-    FS[File System + Diff View]
-    BROWSER[BrowserSession]
-    MCP[MCP Hub]
-  end
-
-  subgraph Storage[Local Storage]
-    TASKDIR[~/.cline/data/tasks/<taskId>]
-    SETTINGS[Global/Workspace State + Secrets]
-  end
-
-  subgraph Providers[Model Providers]
-    LLM[Anthropic/OpenAI/OpenRouter/etc]
-  end
-
-  U --> WV --> WVP --> CTRL --> TASK
-  TASK --> PROMPTS
-  TASK --> CTX
-  TASK --> TOOLS
-  TASK --> STATE
-  TOOLS --> TERM
-  TOOLS --> FS
-  TOOLS --> BROWSER
-  TOOLS --> MCP
-  TASK --> LLM
-  STATE --> SETTINGS
-  TASK --> TASKDIR
-```
+- Reference map: `reference/directory-map.md`
+- Key files: `reference/key-files.md`
+- Mental model: `reference/mental-model.md`
+- Comparison notes: `comparison.md`
+- Changelogs: `CHANGELOG-upstream.md`, `CHANGELOG-docs.md`
