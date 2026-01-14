@@ -1,0 +1,16 @@
+[submodule "gemini-cli"]
+	path = gemini-cli
+	url = https://github.com/google-gemini/gemini-cli.git
+	branch = main
+[submodule "eigent"]
+	path = eigent
+	url = https://github.com/eigent-ai/eigent.git
+	branch = main
+[submodule "opencode"]
+	path = opencode
+	url = https://github.com/anomalyco/opencode.git
+	branch = dev
+[submodule "codex"]
+	path = codex
+	url = https://github.com/openai/codex.git
+	branch = main
