@@ -26,6 +26,8 @@ jobs:
       submodules_updated: ${{ steps.commit-submodules.outputs.updated }}
       docs_needed: ${{ steps.check-doc-changes.outputs.needs_update }}
       changed_submodules: ${{ steps.check-doc-changes.outputs.changed }}
+      changed_manual: ${{ steps.check-doc-changes.outputs.changed_manual }}
+      changed_legacy: ${{ steps.check-doc-changes.outputs.changed_legacy }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -58,15 +60,23 @@ jobs:
           MIN_COMMITS=${{ inputs.min_commits || 5 }}
           FORCE=${{ inputs.force_docs || false }}
           CHANGED_SUBMODULES=""
+          CHANGED_MANUAL=""
+          CHANGED_LEGACY=""
 
           for submodule in codex eigent gemini-cli opencode; do
             if [ -d "$submodule" ]; then
               # Get last doc update time (or epoch if no doc exists)
+              DOC_DIR="projects/$submodule"
               DOC_FILE="${submodule}-architecture.md"
-              if [ -f "$DOC_FILE" ]; then
+              if [ -d "$DOC_DIR" ]; then
+                LAST_DOC_UPDATE=$(git log -1 --format=%ct -- "$DOC_DIR" 2>/dev/null || echo "0")
+                DOC_MODE="manual"
+              elif [ -f "$DOC_FILE" ]; then
                 LAST_DOC_UPDATE=$(git log -1 --format=%ct -- "$DOC_FILE" 2>/dev/null || echo "0")
+                DOC_MODE="legacy"
               else
                 LAST_DOC_UPDATE=0
+                DOC_MODE="legacy"
                 echo "No existing doc for $submodule - will generate"
               fi
 
@@ -87,6 +97,19 @@ jobs:
                 else
                   CHANGED_SUBMODULES="$submodule"
                 fi
+                if [ "$DOC_MODE" = "manual" ]; then
+                  if [ -n "$CHANGED_MANUAL" ]; then
+                    CHANGED_MANUAL="$CHANGED_MANUAL,$submodule"
+                  else
+                    CHANGED_MANUAL="$submodule"
+                  fi
+                else
+                  if [ -n "$CHANGED_LEGACY" ]; then
+                    CHANGED_LEGACY="$CHANGED_LEGACY,$submodule"
+                  else
+                    CHANGED_LEGACY="$submodule"
+                  fi
+                fi
               fi
             fi
           done
@@ -94,10 +117,14 @@ jobs:
           if [ -n "$CHANGED_SUBMODULES" ]; then
             echo "needs_update=true" >> $GITHUB_OUTPUT
             echo "changed=$CHANGED_SUBMODULES" >> $GITHUB_OUTPUT
+            echo "changed_manual=$CHANGED_MANUAL" >> $GITHUB_OUTPUT
+            echo "changed_legacy=$CHANGED_LEGACY" >> $GITHUB_OUTPUT
             echo "Will update docs for: $CHANGED_SUBMODULES"
           else
             echo "needs_update=false" >> $GITHUB_OUTPUT
             echo "changed=" >> $GITHUB_OUTPUT
+            echo "changed_manual=" >> $GITHUB_OUTPUT
+            echo "changed_legacy=" >> $GITHUB_OUTPUT
             echo "No significant changes - skipping doc generation"
           fi
 
@@ -116,11 +143,12 @@ jobs:
         run: git pull origin main
 
       - name: Generate architecture docs
+        if: needs.update.outputs.changed_legacy != ''
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
-            The following submodules have significant updates and need their architecture docs updated incrementally: ${{ needs.update.outputs.changed_submodules }}
+            The following submodules have significant updates and need their legacy architecture docs updated incrementally: ${{ needs.update.outputs.changed_legacy }}
 
             For each submodule listed above:
             1. Read the doc-gen prompt template from .prompts/doc-gen.md
@@ -133,17 +161,60 @@ jobs:
             Include mermaid diagrams for system maps, message flows, and tool lifecycles.
           allowed_tools: "Bash(git log:*),Bash(git diff:*),Bash(ls:*),Bash(find:*),Read,Write,Edit,Glob,Grep"
 
+      - name: Generate manual architecture docs
+        if: needs.update.outputs.changed_manual != ''
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            The following submodules have significant updates and use the manual doc structure under projects/<submodule>/: ${{ needs.update.outputs.changed_manual }}
+
+            For each submodule listed above:
+            1. Read the doc-gen manual prompt template from .prompts/doc-gen-manual.md
+            2. Analyze the submodule directory thoroughly
+            3. Update the docs inside projects/<submodule>/ (do not create {submodule}-architecture.md)
+            4. If docs already exist, do NOT regenerate from scratch; patch only the sections affected by recent changes or missing details
+            5. Use git log/diff in the submodule to scope the edits and preserve the existing structure and wording where still accurate
+
+            Focus on the agentic patterns: sessions, tools, context management, orchestration.
+            Update diagrams only when the underlying flow changed.
+          allowed_tools: "Bash(git log:*),Bash(git diff:*),Bash(ls:*),Bash(find:*),Read,Write,Edit,Glob,Grep"
+
       - name: Commit and push doc updates
         run: |
-          if [ -n "$(git status --porcelain -- '*-architecture.md')" ]; then
+          if [ -n "$(git status --porcelain -- 'projects/*' '*-architecture.md')" ]; then
             git config user.name "doc-bot"
             git config user.email "doc-bot@users.noreply.github.com"
-            git add *-architecture.md
-            git commit -m "docs: auto-update architecture docs
+            MANUAL="${{ needs.update.outputs.changed_manual }}"
+            LEGACY="${{ needs.update.outputs.changed_legacy }}"
 
-            Updated docs for: ${{ needs.update.outputs.changed_submodules }}
+            if [ -n "$MANUAL" ]; then
+              IFS=',' read -ra SUBS <<< "$MANUAL"
+              for s in "${SUBS[@]}"; do
+                git add "projects/$s"
+              done
+            fi
 
-            Generated by Claude Code from .prompts/doc-gen.md template"
+            if [ -n "$LEGACY" ]; then
+              IFS=',' read -ra SUBS <<< "$LEGACY"
+              for s in "${SUBS[@]}"; do
+                git add "${s}-architecture.md"
+              done
+            fi
+
+            {
+              echo "docs: auto-update architecture docs"
+              echo
+              if [ -n "$MANUAL" ]; then
+                echo "Updated manual docs for: $MANUAL"
+              fi
+              if [ -n "$LEGACY" ]; then
+                echo "Updated legacy docs for: $LEGACY"
+              fi
+              echo
+              echo "Generated by Claude Code from .prompts/doc-gen.md and .prompts/doc-gen-manual.md"
+            } > /tmp/commitmsg
+            git commit -F /tmp/commitmsg
             git push
             echo "✅ Architecture docs updated and pushed"
           else
