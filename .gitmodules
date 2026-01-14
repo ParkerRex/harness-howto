@@ -18,3 +18,11 @@
 	path = openhands
 	url = https://github.com/OpenHands/OpenHands.git
 	branch = main
+[submodule "cline"]
+	path = cline
+	url = https://github.com/cline/cline.git
+	branch = main
+[submodule "claude-code-open"]
+	path = claude-code-open
+	url = https://github.com/kill136/claude-code-open.git
+	branch = main
