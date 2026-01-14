@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       force_docs:
-        description: "Force doc regeneration even without significant changes"
+        description: "Force doc update even without significant changes"
         type: boolean
         default: false
       min_commits:
@@ -120,13 +120,14 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
-            The following submodules have significant updates and need their architecture docs regenerated: ${{ needs.update.outputs.changed_submodules }}
+            The following submodules have significant updates and need their architecture docs updated incrementally: ${{ needs.update.outputs.changed_submodules }}
 
             For each submodule listed above:
             1. Read the doc-gen prompt template from .prompts/doc-gen.md
             2. Analyze the submodule directory thoroughly
-            3. Generate or update the {submodule-name}-architecture.md file in the repo root
-            4. If a doc already exists, preserve accurate content and update changed sections
+            3. Update the {submodule-name}-architecture.md file in the repo root
+            4. If a doc already exists, do NOT regenerate from scratch; patch only the sections affected by recent changes or missing details
+            5. Use git log/diff in the submodule to scope the edits and preserve the existing structure and wording where still accurate
 
             Focus on the agentic patterns: sessions, tools, context management, orchestration.
             Include mermaid diagrams for system maps, message flows, and tool lifecycles.

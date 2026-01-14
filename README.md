@@ -8,7 +8,7 @@ Submodules + architecture breakdowns for the major open-source coding agents. Au
 
 - Submodules point to upstream repos (codex, eigent, gemini-cli, opencode, openhands, claude-code-open)
 - GitHub Action runs every 3 days to pull latest changes
-- If a submodule has 5+ new commits, Claude Code regenerates its architecture doc using [.prompts/doc-gen.md](.prompts/doc-gen.md)
+- If a submodule has 5+ new commits, Claude Code incrementally updates its architecture doc (patches based on changes) using [.prompts/doc-gen.md](.prompts/doc-gen.md)
 - Docs commit directly to main
 
 Manual trigger: Actions → "Update submodules & docs" → Run workflow

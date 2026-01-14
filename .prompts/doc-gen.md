@@ -15,6 +15,13 @@ A markdown file (`{project-name}-architecture.md`) in the repo root with:
 
 ## Prompt
 
+IMPORTANT: If `{project-name}-architecture.md` already exists, update it incrementally.
+- Do NOT regenerate the entire document.
+- Use `git log` and `git diff` scoped to the submodule (run from its directory or with `git -C`) to identify what changed.
+- Patch only the sections affected by recent changes or missing details.
+- Preserve existing structure, headings, and wording where still accurate.
+- Update diagrams only when the underlying flow actually changed.
+
 Analyze the `{SUBMODULE_PATH}` directory and generate a comprehensive architecture onboarding document.
 
 ### Focus Areas (prioritized)
@@ -198,12 +205,13 @@ Write the output to codex-architecture.md
 
 When updating existing documentation:
 
-1. Read the existing `{project-name}-architecture.md`
-2. Check git log for recent changes in the submodule: `git -C {SUBMODULE_PATH} log --oneline -20`
-3. Focus on sections affected by recent changes
-4. Preserve existing accurate content
-5. Update diagrams if data flow changed
-6. Add new sections for new features
-7. Mark deprecated patterns if removed
+1. Read the existing `{project-name}-architecture.md` and keep its structure
+2. Identify the last doc update time: `git log -1 --format=%ct -- {project-name}-architecture.md`
+3. Review recent submodule changes (from the submodule directory): `git log --oneline -20` and `git diff --name-only`
+4. Map changed files to the relevant sections in the doc
+5. Patch only the impacted sections; do not rewrite or reorder the whole document
+6. Add targeted inserts for gaps or missed details discovered in the code
+7. Update diagrams only when the underlying flows change
+8. Mark deprecated patterns if removed
 
-Update trigger: Run weekly or when submodule is updated.
+Update trigger: Run on schedule (every 3 days) or when submodule is updated.
