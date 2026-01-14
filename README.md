@@ -6,5 +6,6 @@ This exists mainly for learning and reference purposes, so I can pull everything
 Docs in this repo:
 - `claude-dotfile-setup.md`
 - `codex-dotfile-setup.md`
+- `codex-architecture-breakdown.md`
 - `eigent-architecture.md`
 - `opencode-architecture.md`
