@@ -1,7 +1,17 @@
 # harnesses
 
-A lightweight collection of open-source coding agent repos, tracked as git submodules.
-This exists mainly for learning and reference purposes, so I can pull everything in one place.
+Submodules + architecture breakdowns for the major open-source coding agents. Auto-updated every 3 days.
+
+**Why follow this repo:** One place to track how agentic systems handle sessions, tools, context windows, and orchestration across different implementations.
+
+## How it works
+
+- Submodules point to upstream repos (codex, eigent, gemini-cli, opencode, openhands)
+- GitHub Action runs every 3 days to pull latest changes
+- If a submodule has 5+ new commits, Claude Code regenerates its architecture doc using [.prompts/doc-gen.md](.prompts/doc-gen.md)
+- Docs commit directly to main
+
+Manual trigger: Actions → "Update submodules & docs" → Run workflow
 
 ## Projects
 
