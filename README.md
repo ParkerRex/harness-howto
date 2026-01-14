@@ -1,4 +1,4 @@
-# harnesses
+# harness-howto
 
 Submodules + architecture breakdowns for the major open-source coding agents. Auto-updated every 3 days.
 
