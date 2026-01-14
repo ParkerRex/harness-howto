@@ -4,6 +4,8 @@ Submodules + architecture breakdowns for the major open-source coding agents. Au
 
 **Why follow this repo:** One place to track how agentic systems handle sessions, tools, context windows, and orchestration across different implementations.
 
+Open to suggestions on how to make this more useful — ideas and PRs welcome.
+
 ## How it works
 
 - Submodules point to upstream repos (codex, eigent, gemini-cli, opencode, openhands, claude-code-open)
