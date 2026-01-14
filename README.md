@@ -6,7 +6,7 @@ Submodules + architecture breakdowns for the major open-source coding agents. Au
 
 ## How it works
 
-- Submodules point to upstream repos (codex, eigent, gemini-cli, opencode, openhands)
+- Submodules point to upstream repos (codex, eigent, gemini-cli, opencode, openhands, claude-code-open)
 - GitHub Action runs every 3 days to pull latest changes
 - If a submodule has 5+ new commits, Claude Code regenerates its architecture doc using [.prompts/doc-gen.md](.prompts/doc-gen.md)
 - Docs commit directly to main
@@ -23,13 +23,17 @@ Stars are from GitHub as of 2026-01-14.
 | [Eigent](https://github.com/eigent-ai/eigent) | [eigent-architecture.md](eigent-architecture.md) | 4.4k |
 | [OpenCode](https://github.com/anomalyco/opencode) | [opencode-architecture.md](opencode-architecture.md) | 68.6k |
 | [Codex](https://github.com/openai/codex) | [codex-dotfile-setup.md](codex-dotfile-setup.md)<br>[codex-architecture-breakdown.md](codex-architecture-breakdown.md) | 56.1k |
+| [Cline](https://github.com/cline/cline) | [cline-architecture.md](cline-architecture.md) | 56.9k |
 | [OpenHands](https://github.com/OpenHands/OpenHands) | [openhands-architecture.md](openhands-architecture.md) | 66.6k |
+| [Claude Code Open](https://github.com/kill136/claude-code-open) | [claude-code-open-architecture.md](claude-code-open-architecture.md) | 66 |
 
 ## Docs in this repo
 
 - `claude-dotfile-setup.md`
+- `cline-architecture.md`
 - `codex-dotfile-setup.md`
 - `codex-architecture-breakdown.md`
+- `claude-code-open-architecture.md`
 - `eigent-architecture.md`
 - `gemini-cli-architecture.md`
 - `openhands-architecture.md`
