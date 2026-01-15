@@ -205,11 +205,11 @@ jobs:
             git archive HEAD "docs/coding-agents/$submodule" | tar -x -C "$dest" --strip-components=3
 
             cat > "$dest/SNAPSHOT_META.txt" <<EOF
-snapshot_utc=$TIMESTAMP
-source_ref=$(git rev-parse --short HEAD)
-project=$submodule
-doc_path=docs/coding-agents/$submodule
-EOF
+          snapshot_utc=$TIMESTAMP
+          source_ref=$(git rev-parse --short HEAD)
+          project=$submodule
+          doc_path=docs/coding-agents/$submodule
+          EOF
             SNAPSHOTS_CREATED=true
           }
 
@@ -231,11 +231,11 @@ EOF
             fi
 
             cat > "$dest/SNAPSHOT_META.txt" <<EOF
-snapshot_utc=$TIMESTAMP
-source_ref=$(git rev-parse --short HEAD)
-project=$submodule
-doc_path=$legacy_file
-EOF
+          snapshot_utc=$TIMESTAMP
+          source_ref=$(git rev-parse --short HEAD)
+          project=$submodule
+          doc_path=$legacy_file
+          EOF
             SNAPSHOTS_CREATED=true
           }
 
@@ -280,51 +280,51 @@ EOF
               SUB_REF="$(git -C "src/coding-agents/$s" rev-parse --short HEAD 2>/dev/null || echo "")"
 
               python - "$SNAPSHOT_FILE" "$SNAPSHOT_UTC" "$SUB_REF" "$SNAPSHOT_CADENCE" "$SNAPSHOT_SCOPE" <<'PY'
-import re
-import sys
-from pathlib import Path
+          import re
+          import sys
+          from pathlib import Path
 
-path = Path(sys.argv[1])
-snapshot_utc = sys.argv[2]
-source_ref = sys.argv[3]
-cadence = sys.argv[4]
-scope = sys.argv[5]
+          path = Path(sys.argv[1])
+          snapshot_utc = sys.argv[2]
+          source_ref = sys.argv[3]
+          cadence = sys.argv[4]
+          scope = sys.argv[5]
 
-text = path.read_text()
-lines = text.splitlines()
+          text = path.read_text()
+          lines = text.splitlines()
 
-header = "## 0. Snapshot metadata"
-try:
-    header_idx = lines.index(header)
-except ValueError:
-    lines = [header, ""] + lines
-    header_idx = 0
+          header = "## 0. Snapshot metadata"
+          try:
+              header_idx = lines.index(header)
+          except ValueError:
+              lines = [header, ""] + lines
+              header_idx = 0
 
-def update_line(prefix, value):
-    for i, line in enumerate(lines):
-        if line.startswith(f"- {prefix}"):
-            lines[i] = f"- {prefix} {value}".rstrip()
-            return True
-    return False
+          def update_line(prefix, value):
+              for i, line in enumerate(lines):
+                  if line.startswith(f"- {prefix}"):
+                      lines[i] = f"- {prefix} {value}".rstrip()
+                      return True
+              return False
 
-ordered = [
-    ("Snapshot UTC:", snapshot_utc),
-    ("Snapshot source ref (commit or tag):", source_ref),
-    ("Snapshot cadence (e.g., every 3 days):", cadence),
-    ("Snapshot scope (what changed triggers a snapshot):", scope),
-]
+          ordered = [
+              ("Snapshot UTC:", snapshot_utc),
+              ("Snapshot source ref (commit or tag):", source_ref),
+              ("Snapshot cadence (e.g., every 3 days):", cadence),
+              ("Snapshot scope (what changed triggers a snapshot):", scope),
+          ]
 
-insert_pos = header_idx + 1
-while insert_pos < len(lines) and lines[insert_pos].strip() == "":
-    insert_pos += 1
+          insert_pos = header_idx + 1
+          while insert_pos < len(lines) and lines[insert_pos].strip() == "":
+              insert_pos += 1
 
-for label, value in ordered:
-    if not update_line(label, value):
-        lines.insert(insert_pos, f"- {label} {value}".rstrip())
-        insert_pos += 1
+          for label, value in ordered:
+              if not update_line(label, value):
+                  lines.insert(insert_pos, f"- {label} {value}".rstrip())
+                  insert_pos += 1
 
-path.write_text("\n".join(lines) + "\n")
-PY
+          path.write_text("\n".join(lines) + "\n")
+          PY
             done
           fi
 
