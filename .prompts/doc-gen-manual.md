@@ -15,7 +15,7 @@ Update the existing files under `projects/<submodule>/`:
 - `comparison.md`
 - `CHANGELOG-upstream.md`
 - `CHANGELOG-docs.md`
-- `reference/*.md` (key-files, directory-map, mental-model)
+- `reference/*.md` (key-files, directory-map, mental-model, project-snapshot)
 - `diagrams/*.mmd` (Mermaid diagrams, linked from docs)
 - `subsystems/*.md` (core runtime, tools, models/prompting, context/compaction,
   persistence, safety, observability, etc.)
@@ -36,10 +36,12 @@ For each submodule listed:
 2. Use `git log` and `git diff` scoped to the submodule to identify changes since
    the last doc update.
 3. Patch only the relevant sections/files. Do not rewrite the full docs.
-4. Keep diagrams and file paths accurate. Mermaid diagrams live in
+4. If missing, add `reference/project-snapshot.md` using
+   `projects/_template/project-snapshot.md` as the template.
+5. Keep diagrams and file paths accurate. Mermaid diagrams live in
    `diagrams/*.mmd` and should be linked from docs instead of inlined.
    Only update diagrams if underlying flows changed.
-5. Preserve tone and file organization; add new subsystem files only if the
+6. Preserve tone and file organization; add new subsystem files only if the
    current structure is missing a required area.
 
 ---
@@ -54,6 +56,7 @@ For each submodule listed:
 6. Failure modes & safety
 7. Observability (if present)
 8. Clients & surfaces (if present)
+9. Tech stack, repo shape, data flow, tests, error handling, sharp edges (if present)
 
 ---
 

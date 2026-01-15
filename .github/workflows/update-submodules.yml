@@ -180,6 +180,152 @@ jobs:
             Update diagrams only when the underlying flow changed.
           allowed_tools: "Bash(git log:*),Bash(git diff:*),Bash(ls:*),Bash(find:*),Read,Write,Edit,Glob,Grep"
 
+      - name: Archive previous docs (snapshots)
+        id: archive-docs
+        if: needs.update.outputs.changed_manual != '' || needs.update.outputs.changed_legacy != ''
+        run: |
+          set -euo pipefail
+          TIMESTAMP="$(date -u +%Y%m%d-%H%M%S)"
+          SNAPSHOT_ROOT="projects/_snapshots"
+          SNAPSHOTS_CREATED=false
+
+          mkdir -p "$SNAPSHOT_ROOT"
+
+          archive_manual() {
+            local submodule="$1"
+            if [ -z "$(git status --porcelain -- "projects/$submodule")" ]; then
+              echo "No doc changes for $submodule; skipping snapshot"
+              return
+            fi
+
+            local dest="$SNAPSHOT_ROOT/$submodule/$TIMESTAMP"
+            mkdir -p "$dest"
+            git archive HEAD "projects/$submodule" | tar -x -C "$dest" --strip-components=2
+
+            cat > "$dest/SNAPSHOT_META.txt" <<EOF
+snapshot_utc=$TIMESTAMP
+source_ref=$(git rev-parse --short HEAD)
+project=$submodule
+doc_path=projects/$submodule
+EOF
+            SNAPSHOTS_CREATED=true
+          }
+
+          archive_legacy() {
+            local submodule="$1"
+            local legacy_file="${submodule}-architecture.md"
+            if [ -z "$(git status --porcelain -- "$legacy_file")" ]; then
+              echo "No legacy doc changes for $submodule; skipping snapshot"
+              return
+            fi
+
+            local dest="$SNAPSHOT_ROOT/$submodule/$TIMESTAMP"
+            mkdir -p "$dest"
+            if git cat-file -e "HEAD:$legacy_file" 2>/dev/null; then
+              git show HEAD:"$legacy_file" > "$dest/legacy-architecture.md"
+            else
+              echo "Legacy doc did not exist at HEAD for $submodule; skipping snapshot"
+              return
+            fi
+
+            cat > "$dest/SNAPSHOT_META.txt" <<EOF
+snapshot_utc=$TIMESTAMP
+source_ref=$(git rev-parse --short HEAD)
+project=$submodule
+doc_path=$legacy_file
+EOF
+            SNAPSHOTS_CREATED=true
+          }
+
+          if [ -n "${{ needs.update.outputs.changed_manual }}" ]; then
+            IFS=',' read -ra SUBS <<< "${{ needs.update.outputs.changed_manual }}"
+            for s in "${SUBS[@]}"; do
+              archive_manual "$s"
+            done
+          fi
+
+          if [ -n "${{ needs.update.outputs.changed_legacy }}" ]; then
+            IFS=',' read -ra SUBS <<< "${{ needs.update.outputs.changed_legacy }}"
+            for s in "${SUBS[@]}"; do
+              archive_legacy "$s"
+            done
+          fi
+
+          if [ "$SNAPSHOTS_CREATED" = "true" ]; then
+            echo "snapshots_created=true" >> "$GITHUB_OUTPUT"
+            echo "snapshot_ts=$TIMESTAMP" >> "$GITHUB_OUTPUT"
+          else
+            echo "snapshots_created=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Stamp snapshot metadata
+        if: needs.update.outputs.changed_manual != ''
+        run: |
+          set -euo pipefail
+          SNAPSHOT_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          SNAPSHOT_CADENCE="every 3 days (or manual dispatch)"
+          SNAPSHOT_SCOPE="doc updates in projects/<submodule>/ (manual doc set)"
+
+          if [ -n "${{ needs.update.outputs.changed_manual }}" ]; then
+            IFS=',' read -ra SUBS <<< "${{ needs.update.outputs.changed_manual }}"
+            for s in "${SUBS[@]}"; do
+              SNAPSHOT_FILE="projects/$s/reference/project-snapshot.md"
+              if [ ! -f "$SNAPSHOT_FILE" ]; then
+                mkdir -p "projects/$s/reference"
+                cp "projects/_template/project-snapshot.md" "$SNAPSHOT_FILE"
+              fi
+
+              SUB_REF="$(git -C "$s" rev-parse --short HEAD 2>/dev/null || echo "")"
+
+              python - "$SNAPSHOT_FILE" "$SNAPSHOT_UTC" "$SUB_REF" "$SNAPSHOT_CADENCE" "$SNAPSHOT_SCOPE" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+snapshot_utc = sys.argv[2]
+source_ref = sys.argv[3]
+cadence = sys.argv[4]
+scope = sys.argv[5]
+
+text = path.read_text()
+lines = text.splitlines()
+
+header = "## 0. Snapshot metadata"
+try:
+    header_idx = lines.index(header)
+except ValueError:
+    lines = [header, ""] + lines
+    header_idx = 0
+
+def update_line(prefix, value):
+    for i, line in enumerate(lines):
+        if line.startswith(f"- {prefix}"):
+            lines[i] = f"- {prefix} {value}".rstrip()
+            return True
+    return False
+
+ordered = [
+    ("Snapshot UTC:", snapshot_utc),
+    ("Snapshot source ref (commit or tag):", source_ref),
+    ("Snapshot cadence (e.g., every 3 days):", cadence),
+    ("Snapshot scope (what changed triggers a snapshot):", scope),
+]
+
+insert_pos = header_idx + 1
+while insert_pos < len(lines) and lines[insert_pos].strip() == "":
+    insert_pos += 1
+
+for label, value in ordered:
+    if not update_line(label, value):
+        lines.insert(insert_pos, f"- {label} {value}".rstrip())
+        insert_pos += 1
+
+path.write_text("\n".join(lines) + "\n")
+PY
+            done
+          fi
+
       - name: Commit and push doc updates
         run: |
           if [ -n "$(git status --porcelain -- 'projects/*' '*-architecture.md')" ]; then
@@ -200,6 +346,10 @@ jobs:
               for s in "${SUBS[@]}"; do
                 git add "${s}-architecture.md"
               done
+            fi
+
+            if [ "${{ steps.archive-docs.outputs.snapshots_created }}" = "true" ]; then
+              git add "projects/_snapshots"
             fi
 
             {
