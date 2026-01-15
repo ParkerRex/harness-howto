@@ -1,13 +1,13 @@
 # OSS Codebase Architecture Documentation Generator (Manual Structure)
 
 ## Purpose
-Update the manual, per-subsystem architecture docs under `projects/<submodule>/`.
+Update the manual, per-subsystem architecture docs under `docs/coding-agents/<submodule>/`.
 These docs are hand-curated and should be edited incrementally rather than
 regenerated. Keep structure stable, patch only the parts affected by code
 changes, and preserve wording where still accurate.
 
 ## Target Output
-Update the existing files under `projects/<submodule>/`:
+Update the existing files under `docs/coding-agents/<submodule>/`:
 
 - `README.md` (TL;DR + entry points)
 - `architecture-overview.md`
@@ -32,12 +32,12 @@ structure exists.
 
 For each submodule listed:
 
-1. Read the current docs under `projects/<submodule>/` to understand structure.
+1. Read the current docs under `docs/coding-agents/<submodule>/` to understand structure.
 2. Use `git log` and `git diff` scoped to the submodule to identify changes since
    the last doc update.
 3. Patch only the relevant sections/files. Do not rewrite the full docs.
 4. If missing, add `reference/project-snapshot.md` using
-   `projects/_template/project-snapshot.md` as the template.
+   `docs/_template/project-snapshot.md` as the template.
 5. Keep diagrams and file paths accurate. Mermaid diagrams live in
    `diagrams/*.mmd` and should be linked from docs instead of inlined.
    Only update diagrams if underlying flows changed.
@@ -62,6 +62,6 @@ For each submodule listed:
 
 ## Output Constraints
 
-- Update only files inside `projects/<submodule>/`.
+- Update only files inside `docs/coding-agents/<submodule>/`.
 - Use minimal diffs. No large rewrites.
 - Prefer patching existing bullets and diagrams to preserve layout.

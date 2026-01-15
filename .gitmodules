@@ -1,28 +1,28 @@
 [submodule "gemini-cli"]
-	path = gemini-cli
+	path = src/coding-agents/gemini-cli
 	url = https://github.com/google-gemini/gemini-cli.git
 	branch = main
 [submodule "eigent"]
-	path = eigent
+	path = src/coding-agents/eigent
 	url = https://github.com/eigent-ai/eigent.git
 	branch = main
 [submodule "opencode"]
-	path = opencode
+	path = src/coding-agents/opencode
 	url = https://github.com/anomalyco/opencode.git
 	branch = dev
 [submodule "codex"]
-	path = codex
+	path = src/coding-agents/codex
 	url = https://github.com/openai/codex.git
 	branch = main
 [submodule "openhands"]
-	path = openhands
+	path = src/coding-agents/openhands
 	url = https://github.com/OpenHands/OpenHands.git
 	branch = main
 [submodule "cline"]
-	path = cline
+	path = src/coding-agents/cline
 	url = https://github.com/cline/cline.git
 	branch = main
 [submodule "claude-code-open"]
-	path = claude-code-open
+	path = src/coding-agents/claude-code-open
 	url = https://github.com/kill136/claude-code-open.git
 	branch = main

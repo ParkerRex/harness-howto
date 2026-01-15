@@ -64,9 +64,10 @@ jobs:
           CHANGED_LEGACY=""
 
           for submodule in codex eigent gemini-cli opencode cline openhands claude-code-open; do
-            if [ -d "$submodule" ]; then
+            SUBMODULE_PATH="src/coding-agents/$submodule"
+            if [ -d "$SUBMODULE_PATH" ]; then
               # Get last doc update time (or epoch if no doc exists)
-              DOC_DIR="projects/$submodule"
+              DOC_DIR="docs/coding-agents/$submodule"
               DOC_FILE="${submodule}-architecture.md"
               if [ -d "$DOC_DIR" ]; then
                 LAST_DOC_UPDATE=$(git log -1 --format=%ct -- "$DOC_DIR" 2>/dev/null || echo "0")
@@ -81,12 +82,13 @@ jobs:
               fi
 
               # Count commits in submodule since last doc update
-              cd "$submodule"
+              cd "$SUBMODULE_PATH"
               if [ "$LAST_DOC_UPDATE" -eq 0 ]; then
                 COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "999")
               else
                 COMMIT_COUNT=$(git rev-list --count --since="@$LAST_DOC_UPDATE" HEAD 2>/dev/null || echo "0")
               fi
+              cd ..
               cd ..
 
               echo "$submodule: $COMMIT_COUNT commits since last doc update"
@@ -167,12 +169,12 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
-            The following submodules have significant updates and use the manual doc structure under projects/<submodule>/: ${{ needs.update.outputs.changed_manual }}
+            The following submodules have significant updates and use the manual doc structure under docs/coding-agents/<submodule>/: ${{ needs.update.outputs.changed_manual }}
 
             For each submodule listed above:
             1. Read the doc-gen manual prompt template from .prompts/doc-gen-manual.md
             2. Analyze the submodule directory thoroughly
-            3. Update the docs inside projects/<submodule>/ (do not create {submodule}-architecture.md)
+            3. Update the docs inside docs/coding-agents/<submodule>/ (do not create {submodule}-architecture.md)
             4. If docs already exist, do NOT regenerate from scratch; patch only the sections affected by recent changes or missing details
             5. Use git log/diff in the submodule to scope the edits and preserve the existing structure and wording where still accurate
 
@@ -186,27 +188,27 @@ jobs:
         run: |
           set -euo pipefail
           TIMESTAMP="$(date -u +%Y%m%d-%H%M%S)"
-          SNAPSHOT_ROOT="projects/_snapshots"
+          SNAPSHOT_ROOT="docs/_snapshots"
           SNAPSHOTS_CREATED=false
 
           mkdir -p "$SNAPSHOT_ROOT"
 
           archive_manual() {
             local submodule="$1"
-            if [ -z "$(git status --porcelain -- "projects/$submodule")" ]; then
+            if [ -z "$(git status --porcelain -- "docs/coding-agents/$submodule")" ]; then
               echo "No doc changes for $submodule; skipping snapshot"
               return
             fi
 
             local dest="$SNAPSHOT_ROOT/$submodule/$TIMESTAMP"
             mkdir -p "$dest"
-            git archive HEAD "projects/$submodule" | tar -x -C "$dest" --strip-components=2
+            git archive HEAD "docs/coding-agents/$submodule" | tar -x -C "$dest" --strip-components=3
 
             cat > "$dest/SNAPSHOT_META.txt" <<EOF
 snapshot_utc=$TIMESTAMP
 source_ref=$(git rev-parse --short HEAD)
 project=$submodule
-doc_path=projects/$submodule
+doc_path=docs/coding-agents/$submodule
 EOF
             SNAPSHOTS_CREATED=true
           }
@@ -264,18 +266,18 @@ EOF
           set -euo pipefail
           SNAPSHOT_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           SNAPSHOT_CADENCE="every 3 days (or manual dispatch)"
-          SNAPSHOT_SCOPE="doc updates in projects/<submodule>/ (manual doc set)"
+          SNAPSHOT_SCOPE="doc updates in docs/coding-agents/<submodule>/ (manual doc set)"
 
           if [ -n "${{ needs.update.outputs.changed_manual }}" ]; then
             IFS=',' read -ra SUBS <<< "${{ needs.update.outputs.changed_manual }}"
             for s in "${SUBS[@]}"; do
-              SNAPSHOT_FILE="projects/$s/reference/project-snapshot.md"
+              SNAPSHOT_FILE="docs/coding-agents/$s/reference/project-snapshot.md"
               if [ ! -f "$SNAPSHOT_FILE" ]; then
-                mkdir -p "projects/$s/reference"
-                cp "projects/_template/project-snapshot.md" "$SNAPSHOT_FILE"
+                mkdir -p "docs/coding-agents/$s/reference"
+                cp "docs/_template/project-snapshot.md" "$SNAPSHOT_FILE"
               fi
 
-              SUB_REF="$(git -C "$s" rev-parse --short HEAD 2>/dev/null || echo "")"
+              SUB_REF="$(git -C "src/coding-agents/$s" rev-parse --short HEAD 2>/dev/null || echo "")"
 
               python - "$SNAPSHOT_FILE" "$SNAPSHOT_UTC" "$SUB_REF" "$SNAPSHOT_CADENCE" "$SNAPSHOT_SCOPE" <<'PY'
 import re
@@ -328,7 +330,7 @@ PY
 
       - name: Commit and push doc updates
         run: |
-          if [ -n "$(git status --porcelain -- 'projects/*' '*-architecture.md')" ]; then
+          if [ -n "$(git status --porcelain -- 'docs/*' '*-architecture.md')" ]; then
             git config user.name "doc-bot"
             git config user.email "doc-bot@users.noreply.github.com"
             MANUAL="${{ needs.update.outputs.changed_manual }}"
@@ -337,7 +339,7 @@ PY
             if [ -n "$MANUAL" ]; then
               IFS=',' read -ra SUBS <<< "$MANUAL"
               for s in "${SUBS[@]}"; do
-                git add "projects/$s"
+                git add "docs/coding-agents/$s"
               done
             fi
 
@@ -349,7 +351,7 @@ PY
             fi
 
             if [ "${{ steps.archive-docs.outputs.snapshots_created }}" = "true" ]; then
-              git add "projects/_snapshots"
+              git add "docs/_snapshots"
             fi
 
             {
