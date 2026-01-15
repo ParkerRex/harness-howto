@@ -16,7 +16,9 @@ below are relative to the `codex/` submodule.
 - Memory + persistence: `subsystems/persistence.md`
 - Safety + failure modes: `subsystems/safety-failure-modes.md`
 - Reference map: `reference/directory-map.md`
+- Repo file tree: `reference/file-tree.md`
 - Key files: `reference/key-files.md`
 - Mental model: `reference/mental-model.md`
+- Project snapshot: `reference/project-snapshot.md`
 - Comparison notes: `comparison.md`
 - Changelogs: `CHANGELOG-upstream.md`, `CHANGELOG-docs.md`
