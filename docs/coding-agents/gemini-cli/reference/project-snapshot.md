@@ -34,7 +34,7 @@
   - `tools-state-machine.mmd`
   - `compaction-flow.mmd`
 
-Notes: a top-level file tree reference has not been captured yet.
+Notes: Monorepo with multiple packages (CLI, core, A2A server, VS Code companion, test-utils).
 
 ## 2. Tech stack
 
@@ -76,7 +76,7 @@ Notes: a top-level file tree reference has not been captured yet.
 
 ## 5. Repo file tree (top-level)
 
-- Not captured yet for Gemini CLI; consider generating `reference/file-tree.md` (tracked files, depth-limited).
+- `reference/file-tree.md` (tracked files, depth-limited)
 
 ## 6. Architecture in one whiteboard diagram
 
