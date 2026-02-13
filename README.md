@@ -1,3 +1,8 @@
+Project name: Open Source Snapshot
+One liner: An automated snapshot-and-docs workspace for tracking and studying fast-moving open-source coding-agent projects.
+Stack: Git, Git submodules, GitHub Actions, Markdown docs, Claude Code GitHub Action, shell scripting.
+Problem: Keeping up with rapid upstream changes across multiple coding-agent repos is high effort, so this project centralizes updates and maintains structured docs for easier learning and comparison.
+
 # 📷 Open Source Snapshot
 
 I'm obsessed with open source—I think it's the greatest resource for learning how software actually gets built. This repo is my way of keeping tabs on my favorite projects so I can study and learn from them.
